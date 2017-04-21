@@ -34,14 +34,18 @@ class dct8:
         return idct(idct(block, axis=0, norm='ortho'), axis=1, norm='ortho')
 
     def _compute_dct(self):
-        computed_dct = []
-        for i in range(self.h / 8):
-            for j in range(self.w / 8):
+        computed_dct = np.zeros(shape=(self.h * self.w,), dtype=np.float32)
+
+        k = 0
+        for i in range(self.h // 8):
+            for j in range(self.w // 8):
                 block = self.img[i * 8: i * 8 + 8, j * 8: j * 8 + 8]
                 dct_coeff_block = self._dct(block)
                 # print block
                 # print self._idct(dct_coeff_block)
-                computed_dct.extend(dct_coeff_block.flatten())
+                computed_dct[k : k + 64] = dct_coeff_block.flatten().astype(np.float32)
+                k += 64
+
         return computed_dct
 
 
