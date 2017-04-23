@@ -12,8 +12,8 @@ public class Arbiter {
 
 	public static void main(String[] args) {
 		try {
-			/*FramesUtil.ensureExistence();
-			Thread t1 = new Thread(new Decoder());
+			FramesUtil.ensureExistence();
+			/*Thread t1 = new Thread(new Decoder());
 			t1.start();
 			t1.join();
 			Thread t2 = new Thread(new Player());

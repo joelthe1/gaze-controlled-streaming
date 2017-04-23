@@ -61,7 +61,7 @@ public class Player extends JFrame implements MouseMotionListener, Runnable {
 		frame.getContentPane().setLayout(gLayout);
 
 		try {
-			Iterator<BufferedImage> frameIterator = FramesUtil.frameQueue.iterator();
+			Iterator<BufferedImage> frameIterator = FramesUtil.imageQueue.iterator();
 			long timePerFrame = (long) ((1.0 / Long.valueOf(fps)) * 1000);
 			while (frameIterator.hasNext()) {
 					img = frameIterator.next();
