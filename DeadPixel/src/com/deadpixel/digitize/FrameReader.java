@@ -6,6 +6,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.ObjectRowProcessor;
@@ -16,12 +18,24 @@ import com.univocity.parsers.csv.CsvParserSettings;
 public class FrameReader {
 
 	public void readCSV() {
-		/*CsvParserSettings settings = new CsvParserSettings();
+		CsvParserSettings settings = new CsvParserSettings();
 		settings.getFormat().setLineSeparator("\n");
 		CsvParser parser = new CsvParser(settings);
 		List<String[]> allRows = parser.parseAll(getReader("splits/segment_aa"));
-		System.out.println(allRows.size());*/
-		
+		System.out.println(allRows.size());
+		//if(FramesUtil.frameMap.get())
+		allRows.forEach(row -> {
+			double[] doubleRow = Arrays.stream(row).mapToDouble(Double::valueOf).toArray();
+			
+			if(row[1].equals("0")) FramesUtil.frameMap.put(row[0], new Frame(doubleRow));
+			else if(row[1].equals("8159")) {
+				Frame frame = FramesUtil.frameMap.remove(row[0]);
+				frame.setBlock(doubleRow);
+				FramesUtil.imageQueue.offer(frame);
+				}
+			else FramesUtil.frameMap.get(row[0]).setBlock(doubleRow);
+		});
+		/*
 		// ObjectRowProcessor converts the parsed values and gives you the resulting row.
 		ObjectRowProcessor rowProcessor = new ObjectRowProcessor() {
 			@Override
@@ -61,7 +75,7 @@ public class FrameReader {
 		CsvParser parser = new CsvParser(parserSettings);
 		
 		//the rowProcessor will be executed here.
-		parser.parse(getReader("splits/test.csv"));
+		parser.parse(getReader("splits/test.csv"));*/
 	}
 
 	public Reader getReader(String path) {

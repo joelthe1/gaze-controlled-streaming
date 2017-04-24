@@ -59,8 +59,25 @@ public class Player extends JFrame implements MouseMotionListener, Runnable {
 		frame = new JFrame();
 		GridBagLayout gLayout = new GridBagLayout();
 		frame.getContentPane().setLayout(gLayout);
-
+		
 		try {
+			System.out.println(FramesUtil.imageQueue.size());
+			lbIm1 = new JLabel(new ImageIcon(FramesUtil.imageQueue.take().bufferedImage));
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.anchor = GridBagConstraints.CENTER;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = 1;
+			frame.getContentPane().add(lbIm1, c);
+			frame.pack();
+			frame.setVisible(true);
+			//frame.addMouseMotionListener(this);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		/*try {
 			Iterator<BufferedImage> frameIterator = FramesUtil.imageQueue.iterator();
 			long timePerFrame = (long) ((1.0 / Long.valueOf(fps)) * 1000);
 			while (frameIterator.hasNext()) {
@@ -83,7 +100,7 @@ public class Player extends JFrame implements MouseMotionListener, Runnable {
 				}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 

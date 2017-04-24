@@ -1,22 +1,18 @@
 package com.deadpixel.digitize;
 
-import java.awt.image.BufferedImage;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.PriorityBlockingQueue;
-import java.util.Comparator;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class FramesUtil {
-	public static ConcurrentLinkedQueue<BufferedImage> imageQueue;
-	public static PriorityBlockingQueue<Frame> frameQueue;
+	public static LinkedBlockingQueue<Frame> imageQueue;
+	public static ConcurrentHashMap<String, Frame> frameMap;
 	private static FramesUtil instance = null;
 	
 	private FramesUtil() {
-		imageQueue = new ConcurrentLinkedQueue<>();
-		frameQueue = new PriorityBlockingQueue<>(400, new Comparator<Frame>() {
-			public int compare(Frame f1, Frame f2) {
-				return f1.seq - f2.seq;
-			}
-		});
+		imageQueue = new LinkedBlockingQueue<>();
+		frameMap = new ConcurrentHashMap<>();
 	}
 	
 	public static void ensureExistence() {

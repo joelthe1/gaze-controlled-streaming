@@ -43,7 +43,7 @@ public class Decoder implements Runnable {
 				}
 				//fs++;
 				//System.out.println(fs);
-				FramesUtil.imageQueue.offer(frame);
+				//FramesUtil.imageQueue.offer(frame);
 				ind += height * width * 2;
 			}
 			System.out.println(ind);
