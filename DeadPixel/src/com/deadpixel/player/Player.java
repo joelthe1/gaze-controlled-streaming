@@ -62,6 +62,7 @@ public class Player extends JFrame implements MouseMotionListener, Runnable {
 		
 		try {
 			System.out.println(FramesUtil.imageQueue.size());
+			
 			lbIm1 = new JLabel(new ImageIcon(FramesUtil.imageQueue.take().bufferedImage));
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;

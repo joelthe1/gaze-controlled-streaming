@@ -23,7 +23,6 @@ public class FrameReader {
 		CsvParser parser = new CsvParser(settings);
 		List<String[]> allRows = parser.parseAll(getReader("splits/segment_aa"));
 		System.out.println(allRows.size());
-		//if(FramesUtil.frameMap.get())
 		allRows.forEach(row -> {
 			double[] doubleRow = Arrays.stream(row).mapToDouble(Double::valueOf).toArray();
 			
