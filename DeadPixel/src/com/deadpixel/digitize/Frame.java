@@ -15,7 +15,7 @@ public class Frame {
 	/*
 	 * Create block from a row of the CSV
 	 */
-	Frame(double[] row) {
+	Frame(Object[] row) {
 		bufferedImage = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
 		frame = ((DataBufferByte)bufferedImage.getRaster().getDataBuffer()).getData();
 		rBlock = new double[64];
@@ -25,12 +25,13 @@ public class Frame {
 		setBlock(row);
 	}
 	
-	public void setBlock(double[] row) {
+	public void setBlock(Object[] row) {
 		int blockIndex = ((Double)row[1]).intValue();
+				//quantization = (int) Math.pow(2, (int)row[194]);
 		for(int i=0; i<64; i++) {
-			rBlock[i] = row[i+2];
-			gBlock[i] = row[i+2+64];
-			bBlock[i] = row[i+2+128];
+			rBlock[i] = (double)row[i+2];///quantization;
+			gBlock[i] = (double)row[i+2+64];///quantization;
+			bBlock[i] = (double)row[i+2+128];///quantization;
 		}
 		doIDCTBlocks();
 		
@@ -38,9 +39,10 @@ public class Frame {
 		int base = (blockIndex%120)*24 + (blockIndex-(blockIndex%120))*192;
 		for(int i=0, iter=0; iter<64; iter++) {
 			i = (iter!=0 && iter%8==0)? i+2880-24 : i;
-			frame[base+i] = (byte)((((Double)bBlock[iter]).intValue())+128);
-			frame[base+i+1] = (byte)((((Double)gBlock[iter]).intValue())+128);
-			frame[base+i+2] = (byte)((((Double)rBlock[iter]).intValue())+128);
+			//(int) (doubleVar + 0.5)
+			frame[base+i] = (byte)((int)(bBlock[iter]+128.5));
+			frame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
+			frame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
 			i+=3;
 		}
 	}

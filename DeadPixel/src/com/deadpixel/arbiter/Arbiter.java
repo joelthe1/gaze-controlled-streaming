@@ -17,6 +17,7 @@ public class Arbiter {
 
 	public static void main(String[] args) {
 		try {
+			final long startTime = System.currentTimeMillis();
 			FramesUtil.ensureExistence();
 			/*Thread t1 = new Thread(new Decoder());
 			t1.start();
@@ -24,7 +25,7 @@ public class Arbiter {
 			*/
 			FrameReader reader = new FrameReader();
 			reader.readCSV();
-			
+			System.out.println("Total time=" + (System.currentTimeMillis() - startTime));
 			JFrame frame = new JFrame();
 			GridBagLayout gLayout = new GridBagLayout();
 			frame.getContentPane().setLayout(gLayout);
