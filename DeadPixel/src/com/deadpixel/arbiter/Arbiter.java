@@ -18,8 +18,16 @@ public class Arbiter {
 	public static void main(String[] args) {
 		try {
 			FramesUtil.ensureExistence();
+			
+			// Initialize input params
+			FramesUtil.n1 = Integer.parseInt(args[0]);
+			FramesUtil.n2 = Integer.parseInt(args[1]);
+			FramesUtil.isGazedControlled = Integer.parseInt(args[2]);
+			
+			// Initialize and read binary
 			FrameReader reader = new FrameReader();
 			reader.readBinary();
+			
 			testVideo(1);
 			testVideo(100);
 			testVideo(200);

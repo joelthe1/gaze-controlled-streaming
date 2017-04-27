@@ -37,15 +37,19 @@ public class Frame implements Callable {
 			DCTframe.get();
 			blockIndex = (int)DCTframe.get();
 			
-			int blockType = (int)DCTframe.get();
-			float quantizer = blockType > 1? 2.0f:1.0f;
+			float blockType = DCTframe.get();
+			
+			// Decide quantization value
+			float quantizer = (blockType >= 2.0f && blockType < 5.0f)? FramesUtil.n1 : FramesUtil.n2;
 			//System.out.println("Frame position is=" + DCTframe.position() + " and blockIndex="+blockIndex + " and blockType=" + blockType);
 			
 			pos = DCTframe.position();
+			// Setup HQ DCT frame
 			((FloatBuffer)DCTframe.duplicate().limit(pos+64)).get(bBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+64).limit(pos+128)).get(gBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+128).limit(pos+192)).get(rBlock);
 			
+			// Setup LQ DCT frame
 			((FloatBuffer)DCTframe.duplicate().limit(pos+64)).get(lqBBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+64).limit(pos+128)).get(lqGBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+128).limit(pos+192)).get(lqRBlock);
