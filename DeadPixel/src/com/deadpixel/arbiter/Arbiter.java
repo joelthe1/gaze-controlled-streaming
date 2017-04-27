@@ -32,7 +32,7 @@ public class Arbiter {
 	
 	public static void testVideo(int frameNum) {
 		try {
-			JLabel lbIm1 = new JLabel(new ImageIcon(FramesUtil.frameMap.get(frameNum).bufferedImage));//FramesUtil.imageQueue.take().bufferedImage));
+			JLabel lbIm1 = new JLabel(new ImageIcon(FramesUtil.frameMap.get(frameNum).lqBufferedImage));//FramesUtil.imageQueue.take().bufferedImage));
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.anchor = GridBagConstraints.CENTER;

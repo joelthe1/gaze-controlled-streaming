@@ -8,18 +8,24 @@ import java.util.concurrent.Callable;
 import org.jtransforms.dct.FloatDCT_2D;
 
 public class Frame implements Callable {
-	public byte[] frame;
-	float[] rBlock, gBlock, bBlock;
-	public BufferedImage bufferedImage;
+	public byte[] hqFrame, lqFrame;
+	float[] rBlock, gBlock, bBlock, lqRBlock, lqGBlock, lqBBlock;
+	public BufferedImage hqBufferedImage, lqBufferedImage;
 	int frameIndex;
 	FloatBuffer DCTframe;
 	
 	Frame(FloatBuffer DCTframe) {
-		bufferedImage = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
-		frame = ((DataBufferByte)bufferedImage.getRaster().getDataBuffer()).getData();
+		hqBufferedImage = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
+		lqBufferedImage = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
+		hqFrame = ((DataBufferByte)hqBufferedImage.getRaster().getDataBuffer()).getData();
+		lqFrame = ((DataBufferByte)lqBufferedImage.getRaster().getDataBuffer()).getData();
 		rBlock = new float[64];
 		gBlock = new float[64];
 		bBlock = new float[64];
+		lqRBlock = new float[64];
+		lqGBlock = new float[64];
+		lqBBlock = new float[64];
+		
 		this.DCTframe = DCTframe.duplicate();
 		this.frameIndex = (int)DCTframe.get();
 	}
@@ -30,21 +36,41 @@ public class Frame implements Callable {
 		for(int k=0; k<8160; k++) {
 			DCTframe.get();
 			blockIndex = (int)DCTframe.get();
-			//System.out.println("Frame position is=" + DCTframe.position() + " and blockIndex="+blockIndex);
-			DCTframe.get();
+			
+			int blockType = (int)DCTframe.get();
+			float quantizer = blockType > 1? 2.0f:1.0f;
+			//System.out.println("Frame position is=" + DCTframe.position() + " and blockIndex="+blockIndex + " and blockType=" + blockType);
+			
 			pos = DCTframe.position();
 			((FloatBuffer)DCTframe.duplicate().limit(pos+64)).get(bBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+64).limit(pos+128)).get(gBlock);
 			((FloatBuffer)DCTframe.duplicate().position(pos+128).limit(pos+192)).get(rBlock);
+			
+			((FloatBuffer)DCTframe.duplicate().limit(pos+64)).get(lqBBlock);
+			((FloatBuffer)DCTframe.duplicate().position(pos+64).limit(pos+128)).get(lqGBlock);
+			((FloatBuffer)DCTframe.duplicate().position(pos+128).limit(pos+192)).get(lqRBlock);
+			
+			
+			if(quantizer!=1)
+				for(int i=0; i<64; i++) {
+					lqBBlock[i] = Math.round(lqBBlock[i]/quantizer);
+					lqGBlock[i] = Math.round(lqGBlock[i]/quantizer);
+					lqRBlock[i] = Math.round(lqRBlock[i]/quantizer);
+				}
 			
 			doIDCTBlocks();
 			
 			int base = (blockIndex%120)*24 + (blockIndex-(blockIndex%120))*192;
 			for(int i=0, iter=0; iter<64; iter++) {
 				i = (iter!=0 && iter%8==0)? i+2880-24 : i;
-				frame[base+i] = (byte)((int)(bBlock[iter]+128.5));
-				frame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
-				frame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+				hqFrame[base+i] = (byte)((int)(bBlock[iter]+128.5));
+				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
+				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+				
+				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+128.5));
+				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+128.5));
+				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+128.5));
+				
 				i+=3;
 			}
 			DCTframe.position(pos+192);
@@ -61,5 +87,8 @@ public class Frame implements Callable {
 		DCTConvertor.inverse(rBlock, true);
 		DCTConvertor.inverse(gBlock, true);
 		DCTConvertor.inverse(bBlock, true);
+		DCTConvertor.inverse(lqRBlock, true);
+		DCTConvertor.inverse(lqGBlock, true);
+		DCTConvertor.inverse(lqBBlock, true);
 	}
 }
