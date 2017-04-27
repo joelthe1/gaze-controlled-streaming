@@ -47,7 +47,6 @@ public class Decoder implements Runnable {
 				ind += height * width * 2;
 			}
 			System.out.println(ind);
-			System.out.print(FramesUtil.imageQueue.size());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
