@@ -20,7 +20,7 @@ def find_dct_coeff_single(img):
     :return: flattened list of dct coeffs as strings
     """
     assert img.shape == (544, 960), "Unexpected shape for single channel image"
-    return dct8(img)._compute_dct().astype(np.string_)
+    return dct8(img)._compute_dct()
 
 
 def frame_worker(pixels, ind):
@@ -69,15 +69,18 @@ def frame_worker(pixels, ind):
 
     rows = []
     for i in range(0, len(r_coeffs), 64):
+        row = np.zeros(shape=(3+3*64,), dtype=np.float32)
         frame_no = ind // (960 * 540 * 3)
         block_no = i // 64
-        segment = int(min(motion_vec_magnitudes[block_no], 1)) if calculate_motion_vec else 1
-        rows.append('{},{},{},{},{},{}\n'.format(frame_no,
-                                                 block_no,
-                                                 ','.join(r_coeffs[i: i + 64]),
-                                                 ','.join(g_coeffs[i: i + 64]),
-                                                 ','.join(b_coeffs[i: i + 64]),
-                                                 segment))
+        segment = motion_vec_magnitudes[block_no] if calculate_motion_vec else 0.
+        row[0] = frame_no
+        row[1] = block_no
+        row[2] = segment
+        row[3:3+64] = b_coeffs[i: i+64]
+        row[3+64:3+64*2] = g_coeffs[i: i+64]
+        row[3+64*2:] = r_coeffs[i: i+64]
+        rows.append(row)
+
     return rows
 
 
@@ -85,7 +88,7 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "-i", "--inp",
-        default='/Users/jmathai/multimedia_data/final.rgb',
+        default='/Users/jmathai/multimedia_data/oneperson.rgb',
         help="Directory with rgb video."
     )
     parser.add_argument(
@@ -108,13 +111,13 @@ def main():
     params['output'] = args.out
     params['njobs'] = args.njobs
     pixels = np.fromfile(params["input"], dtype=np.uint8)
+    output_file = "{}/{}_encoder_output.npy".format(params["output"], params["input"].split('/')[-1].split('.')[0])
 
     values = Parallel(n_jobs=params["njobs"])(delayed(frame_worker)(pixels, index)
                                               for index in range(0, len(pixels), (h * w * channels)))
 
-    with open('{}/output.csv'.format(params["output"]), 'w') as f:
-        for row in list(itertools.chain.from_iterable(values)):
-            f.write(row)
+    print("writing to ", output_file)
+    np.array(values).flatten().tofile(output_file)
 
 
 if __name__ == "__main__":
