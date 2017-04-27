@@ -1,6 +1,5 @@
 package com.deadpixel.digitize;
 
-import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -10,13 +9,11 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.RecursiveAction;
 
 import com.univocity.parsers.common.ParsingContext;
 import com.univocity.parsers.common.processor.ObjectRowProcessor;
@@ -29,7 +26,7 @@ public class FrameReader{
 	public void readBinary() {
 		try {
 			final long startTime = System.currentTimeMillis();
-			FileInputStream f = new FileInputStream("/Users/fox/Documents/sem4/project/given/test.bin");
+			FileInputStream f = new FileInputStream("/Users/fox/Documents/sem4/project/given/test2");
 			FileChannel ch = f.getChannel();
 			ByteBuffer bb = ByteBuffer.allocateDirect(6364800);
 			bb.order(ByteOrder.nativeOrder());
@@ -84,7 +81,7 @@ public class FrameReader{
 				// System.out.println(Arrays.toString(row));
 				// Frame frame = new Frame(row);
 				if ((double) row[1] == 0.0)
-					FramesUtil.frameMap.put((double) row[0], new Frame(row));
+					FramesUtil.frameMap.put((int)row[0], new Frame(row));
 				else if ((double) row[1] == 8159.0) {
 					Frame frame = FramesUtil.frameMap.get((double) row[0]);
 					frame.setBlock(row);
@@ -131,15 +128,6 @@ public class FrameReader{
 
 		// the rowProcessor will be executed here.
 		parser.parse(getReader("splits120/segment_a"));
-	}
-
-	private Runnable setupThread(final Frame frame, final Object[] row) {
-		Runnable setBlockThread = new Runnable() {
-			public void run() {
-				frame.setBlock(row);
-			}
-		};
-		return setBlockThread;
 	}
 
 	public Reader getReader(String path) {

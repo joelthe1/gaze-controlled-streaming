@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class FramesUtil {
 	public static LinkedBlockingQueue<Frame> imageQueue;
-	public static ConcurrentHashMap<Double, Frame> frameMap;
+	public static ConcurrentHashMap<Integer, Frame> frameMap;
 	private static FramesUtil instance = null;
 	
 	private FramesUtil() {

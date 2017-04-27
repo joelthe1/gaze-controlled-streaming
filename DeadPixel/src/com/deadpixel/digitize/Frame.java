@@ -64,7 +64,8 @@ public class Frame implements Callable {
 			}
 			DCTframe.position(pos+192);
 		}
-		FramesUtil.imageQueue.offer(this);
+		//FramesUtil.imageQueue.offer(this);
+		FramesUtil.frameMap.put(frameIndex, this);
 		return true;
 	}
 	

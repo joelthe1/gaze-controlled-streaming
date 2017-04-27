@@ -2,14 +2,6 @@ package com.deadpixel.arbiter;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.FileInputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -73,9 +65,9 @@ public class Arbiter {
 			frame.getContentPane().setLayout(gLayout);
 			
 			try {
-				System.out.println(FramesUtil.imageQueue.size());
+				System.out.println(FramesUtil.frameMap.size());
 				
-				JLabel lbIm1 = new JLabel(new ImageIcon(FramesUtil.imageQueue.take().bufferedImage));
+				JLabel lbIm1 = new JLabel(new ImageIcon(FramesUtil.frameMap.get(0).bufferedImage));//FramesUtil.imageQueue.take().bufferedImage));
 				GridBagConstraints c = new GridBagConstraints();
 				c.fill = GridBagConstraints.HORIZONTAL;
 				c.anchor = GridBagConstraints.CENTER;
