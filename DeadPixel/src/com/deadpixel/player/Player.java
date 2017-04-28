@@ -54,8 +54,7 @@ public class Player extends JFrame implements MouseMotionListener, Runnable {
 		width = 960;
 		height = 540;
 		fps = 30;
-
-		//img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		
 		frame = new JFrame();
 		GridBagLayout gLayout = new GridBagLayout();
 		frame.getContentPane().setLayout(gLayout);

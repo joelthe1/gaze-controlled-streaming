@@ -15,11 +15,10 @@ public class FrameReader {
 	public void readBinary() {
 		try {
 			final long startTime = System.currentTimeMillis();
-			File file = new File("/Users/fox/Documents/sem4/project/given/two_people_encoder_output.bin");
+			File file = new File(FramesUtil.inputFile);
 			long fileLength = file.length();
 
-			FileInputStream f = new FileInputStream(
-					"/Users/fox/Documents/sem4/project/given/two_people_encoder_output.bin");
+			FileInputStream f = new FileInputStream(FramesUtil.inputFile);
 			FileChannel ch = f.getChannel();
 			
 			// For 1 frame
@@ -33,14 +32,8 @@ public class FrameReader {
 
 			for (int k = 0; k < fileLength / frameLength; k++) {
 				int n = ch.read(bb);
-
-				// FloatBuffer frameBuffer = ((ByteBuffer)
-				// bb.rewind()).asFloatBuffer();
-
-				// for(Object input : inputs){
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
-				// }
-				
+
 				if((k!=0 && k%70 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%70 != 0)) {
 					exec.invokeAll(tasks);
 					System.out.println("Time taken for " + (k+1) +" frames=" + (System.currentTimeMillis() - startTime) + 
@@ -49,6 +42,8 @@ public class FrameReader {
 				}
 			}
 			exec.shutdown();
+			ch.close();
+			f.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

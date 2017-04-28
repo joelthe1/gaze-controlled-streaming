@@ -40,7 +40,7 @@ public class Frame implements Callable {
 			float blockType = DCTframe.get();
 			
 			// Decide quantization value
-			float quantizer = (blockType >= 2.0f && blockType < 5.0f)? FramesUtil.n1 : FramesUtil.n2;
+			int quantizer = (blockType >= 2.0f && blockType < 5.0f)? FramesUtil.n1 : FramesUtil.n2;
 			//System.out.println("Frame position is=" + DCTframe.position() + " and blockIndex="+blockIndex + " and blockType=" + blockType);
 			
 			pos = DCTframe.position();
@@ -67,13 +67,21 @@ public class Frame implements Callable {
 			int base = (blockIndex%120)*24 + (blockIndex-(blockIndex%120))*192;
 			for(int i=0, iter=0; iter<64; iter++) {
 				i = (iter!=0 && iter%8==0)? i+2880-24 : i;
-				hqFrame[base+i] = (byte)((int)(bBlock[iter]+128.5));
-				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
-				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+//				hqFrame[base+i] = (byte)((int)(bBlock[iter]+128.5));
+//				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
+//				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+//				
+//				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+128.5));
+//				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+128.5));
+//				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+128.5));
 				
-				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+128.5));
-				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+128.5));
-				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+128.5));
+				hqFrame[base+i] = (byte)((int)(bBlock[iter]+0.5));
+				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+0.5));
+				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+0.5));
+				
+				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+0.5));
+				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+0.5));
+				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+0.5));
 				
 				i+=3;
 			}
