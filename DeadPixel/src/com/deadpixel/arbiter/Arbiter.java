@@ -40,12 +40,12 @@ public class Arbiter {
 			reader.readBinary();
 			
 			testVideo(1);
-			testVideo(20);
-			testVideo(30);
-			testVideo(50);
-			testVideo(60);
-			testVideo(80);
-			testVideo(90);
+//			testVideo(20);
+//			testVideo(30);
+//			testVideo(50);
+//			testVideo(60);
+//			testVideo(80);
+//			testVideo(90);
 //			testVideo();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -55,7 +55,7 @@ public class Arbiter {
 	public static void testVideo(int frameNum) {
 		try {
 			BufferedImage img = FramesUtil.frameMap.get(frameNum).lqBufferedImage;
-			img.setData(FramesUtil.getGazeArea(940, 300, frameNum));
+			//img.setData(FramesUtil.getGazeArea(940, 300, frameNum));
 			JLabel lbIm1 = new JLabel(new ImageIcon(img));//FramesUtil.imageQueue.take().bufferedImage));
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
@@ -66,9 +66,19 @@ public class Arbiter {
 			JFrame frame = new JFrame();
 			GridBagLayout gLayout = new GridBagLayout();
 			frame.getContentPane().setLayout(gLayout);
-			frame.getContentPane().add(lbIm1, c);
-			frame.pack();
+			//frame.getContentPane().add(lbIm1, c);
+//			frame.pack();
 			frame.setVisible(true);
+			
+			for(int i=0; i<100; i++) {
+				lbIm1.setIcon(new ImageIcon(FramesUtil.frameMap.get(i).hqBufferedImage));
+				frame.getContentPane().add(lbIm1, c);
+				frame.pack();
+				lbIm1.updateUI();
+//				frame.revalidate();
+				//frame.repaint();
+				Thread.sleep(10);
+			}
 			//frame.addMouseMotionListener(this);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		} catch(Exception e) {

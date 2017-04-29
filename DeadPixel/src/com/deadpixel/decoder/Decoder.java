@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.deadpixel.digitize.FramesUtil;
-import com.deadpixel.player.Player;
 
 public class Decoder implements Runnable {
 	

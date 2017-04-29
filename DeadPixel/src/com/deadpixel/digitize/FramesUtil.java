@@ -2,16 +2,17 @@ package com.deadpixel.digitize;
 
 import java.awt.Rectangle;
 import java.awt.image.Raster;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class FramesUtil {
-	public static ConcurrentHashMap<Integer, Frame> frameMap;
+	public static HashMap<Integer, Frame> frameMap;
 	private static FramesUtil instance = null;
 	public static int n1, n2, isGazedControlled;
 	public static String inputFile;
 	private FramesUtil() {
-		frameMap = new ConcurrentHashMap<>();
+		frameMap = new HashMap<>();
 	}
 	
 	public static void ensureExistence() {
