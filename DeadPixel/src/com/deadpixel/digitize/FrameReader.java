@@ -24,21 +24,21 @@ public class FrameReader {
 			// For 1 frame
 			int frameLength = 6364800;
 
-			ByteBuffer bb = ByteBuffer.allocateDirect(frameLength);
-			bb.order(ByteOrder.nativeOrder());
-
 			ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			ArrayList<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
 
 			for (int k = 0; k < fileLength / frameLength; k++) {
+				ByteBuffer bb = ByteBuffer.allocateDirect(frameLength);
+				bb.order(ByteOrder.nativeOrder());
 				int n = ch.read(bb);
+				//System.out.println(n + " and bb pos=" + bb.position() + " and ch pos=" + ch.position());
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
 
 				if((k!=0 && k%70 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%70 != 0)) {
 					exec.invokeAll(tasks);
 					System.out.println("Time taken for " + (k+1) +" frames=" + (System.currentTimeMillis() - startTime) + 
 							" and tasks size=" + tasks.size());
-					//tasks.clear();
+					tasks.clear();
 				}
 			}
 			exec.shutdown();

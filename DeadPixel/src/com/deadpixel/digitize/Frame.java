@@ -67,21 +67,21 @@ public class Frame implements Callable {
 			int base = (blockIndex%120)*24 + (blockIndex-(blockIndex%120))*192;
 			for(int i=0, iter=0; iter<64; iter++) {
 				i = (iter!=0 && iter%8==0)? i+2880-24 : i;
-//				hqFrame[base+i] = (byte)((int)(bBlock[iter]+128.5));
-//				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
-//				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+				hqFrame[base+i] = (byte)((int)(bBlock[iter]+128.5));
+				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+128.5));
+				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+128.5));
+				
+				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+128.5));
+				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+128.5));
+				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+128.5));
+				
+//				hqFrame[base+i] = (byte)((int)(bBlock[iter]+0.5));
+//				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+0.5));
+//				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+0.5));
 //				
-//				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+128.5));
-//				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+128.5));
-//				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+128.5));
-				
-				hqFrame[base+i] = (byte)((int)(bBlock[iter]+0.5));
-				hqFrame[base+i+1] = (byte)((int)(gBlock[iter]+0.5));
-				hqFrame[base+i+2] = (byte)((int)(rBlock[iter]+0.5));
-				
-				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+0.5));
-				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+0.5));
-				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+0.5));
+//				lqFrame[base+i] = (byte)((int)(lqBBlock[iter]+0.5));
+//				lqFrame[base+i+1] = (byte)((int)(lqGBlock[iter]+0.5));
+//				lqFrame[base+i+2] = (byte)((int)(lqRBlock[iter]+0.5));
 				
 				i+=3;
 			}
