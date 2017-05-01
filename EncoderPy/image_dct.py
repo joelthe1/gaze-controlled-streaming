@@ -9,7 +9,7 @@ class dct8:
         :param w: width
         :param h: height
         """
-        self.img = img.copy() - 128
+        self.img = img.copy()
         self.h = int(h)
         self.w = int(w)
 
