@@ -1,5 +1,6 @@
 package com.deadpixel.player;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,7 @@ public class Player extends JPanel implements ActionListener
         setLayout( new BorderLayout() );
 
         timeLabel = new JLabel( new Date().toString() );
+        timeLabel.setPreferredSize(new Dimension(960, 540));
         //imageLabel = new JLabel( timeLabel.getText() );
 
         add(timeLabel, BorderLayout.NORTH);
@@ -44,7 +46,7 @@ public class Player extends JPanel implements ActionListener
     	
         timeLabel.setText( new Date().toString() );
         //System.out.println(frameIndex);
-        ImageIcon icon = new ImageIcon(FramesUtil.frameMap.get(frameIndex).lqBufferedImage);
+        ImageIcon icon = new ImageIcon(FramesUtil.frameMap.get(frameIndex).hqBufferedImage);
         icon.getImage().flush();
         timeLabel.setIcon(icon);
         frameIndex++;
@@ -52,10 +54,11 @@ public class Player extends JPanel implements ActionListener
 
     public static void createAndShowUI()
     {
-        JFrame frame = new JFrame("SSCCE");    	
+        JFrame frame = new JFrame("DeadPixel Player");    	
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add( new Player() );
         frame.setLocationByPlatform( true );
+        frame.getContentPane().setSize(960,540);
         frame.pack();
         frame.setVisible( true );
     }
