@@ -1,15 +1,14 @@
 package com.deadpixel.player;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.event.MouseAdapter;
 import java.nio.ByteBuffer;
-import java.util.Date;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,6 +28,7 @@ public class Player extends JPanel implements ActionListener, MouseMotionListene
     ByteBuffer renderedFrameByteBuffer;
     BufferedImage renderedFrame;
     byte[] renderedFrameByteArray;
+    boolean isPaused;
 
     public Player()
     {
@@ -42,37 +42,46 @@ public class Player extends JPanel implements ActionListener, MouseMotionListene
         //add(imageLabel, BorderLayout.SOUTH);
  
         addMouseMotionListener(this);
+        
         frameIndex=0;
         renderedFrameByteBuffer = ByteBuffer.allocateDirect(1566720);
         renderedFrame = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
         renderedFrameByteArray = ((DataBufferByte)renderedFrame.getRaster().getDataBuffer()).getData();
         
-        javax.swing.Timer timer = new javax.swing.Timer(33, this);
+        javax.swing.Timer timer = new javax.swing.Timer(41, this);
         timer.start();
+        
+        isPaused = false;
+        addMouseListener(new MouseAdapter() { 
+            public void mousePressed(MouseEvent me) { 
+            	isPaused = isPaused? false: true;
+            } 
+          });
     }
 
     public void actionPerformed(ActionEvent e)
     {
     	if(frameIndex >= FramesUtil.framesCount)
     		frameIndex=0;
-    	
-        //timeLabel.setText( new Date().toString() );
-        //System.out.println(this.mouseX + ", " + this.mouseY);
         
-        ((ByteBuffer) renderedFrameByteBuffer.rewind()).put(((DataBufferByte)FramesUtil.frameMap.get(frameIndex).lqBufferedImage.getRaster().getDataBuffer()).getData());
-        ((ByteBuffer) renderedFrameByteBuffer.rewind()).get(renderedFrameByteArray);
-        renderedFrame.setData(FramesUtil.getGazeArea(mouseX, mouseY, frameIndex));
+	    ((ByteBuffer) renderedFrameByteBuffer.rewind()).put(((DataBufferByte)FramesUtil.frameMap.get(frameIndex).lqBufferedImage.getRaster().getDataBuffer()).getData());
+	    ((ByteBuffer) renderedFrameByteBuffer.rewind()).get(renderedFrameByteArray);
+	    if(FramesUtil.isGazeControlled == 1) {
+	        	renderedFrame.setData(FramesUtil.getGazeArea(mouseX, mouseY, frameIndex));
+    	}
         ImageIcon icon = new ImageIcon(renderedFrame);
         icon.getImage().flush();
         timeLabel.setIcon(icon);
-        frameIndex++;
+        
+        if(!isPaused)
+        	frameIndex++;
     }
 
     public static void createAndShowUI()
     {
-        JFrame frame = new JFrame("DeadPixel Player");    	
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame frame = new JFrame("DeadPixel Player");
         frame.add( new Player() );
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationByPlatform( true );
         frame.getContentPane().setSize(960,540);
         frame.pack();
@@ -87,25 +96,15 @@ public class Player extends JPanel implements ActionListener, MouseMotionListene
 		FramesUtil.inputFile = args[0];
 		FramesUtil.n1 = (int)Math.pow(2, Integer.parseInt(args[1]));
 		FramesUtil.n2 = (int)Math.pow(2, Integer.parseInt(args[2]));
-		FramesUtil.isGazedControlled = Integer.parseInt(args[3]);
+		FramesUtil.isGazeControlled = Integer.parseInt(args[3]);
 		
 		// Initialize and read binary
 		FrameReader reader = new FrameReader();
 		reader.readBinary();
-		
-        EventQueue.invokeLater(new Runnable()
-        {
-            public void run()
-            {   			
-                createAndShowUI();
-            }
-        });
     }
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -113,7 +112,5 @@ public class Player extends JPanel implements ActionListener, MouseMotionListene
 		//System.out.println(e.getX() + ", " + e.getY());
 		mouseX = e.getX();
 		mouseY = e.getY();
-		// TODO Auto-generated method stub
-		
 	}
 }

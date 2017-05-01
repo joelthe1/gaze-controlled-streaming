@@ -1,5 +1,6 @@
 package com.deadpixel.digitize;
 
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import com.deadpixel.player.Player;
 
 public class FrameReader {
 
@@ -34,8 +37,16 @@ public class FrameReader {
 				//System.out.println(n + " and bb pos=" + bb.position() + " and ch pos=" + ch.position());
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
 
-				if((k!=0 && k%70 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%70 != 0)) {
+				if((k!=0 && k%40 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%40 != 0)) {
 					exec.invokeAll(tasks);
+					if(k==40) {
+						System.out.println("Starting player");
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								Player.createAndShowUI();
+							}
+						});
+					}
 					System.out.println("Time taken for " + (k+1) +" frames=" + (System.currentTimeMillis() - startTime) + 
 							" and tasks size=" + tasks.size());
 					tasks.clear();
