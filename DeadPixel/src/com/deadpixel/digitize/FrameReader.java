@@ -26,8 +26,8 @@ public class FrameReader {
 
 			ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			ArrayList<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
-
-			for (int k = 0; k < fileLength / frameLength; k++) {
+			FramesUtil.framesCount = (int)(fileLength / frameLength);
+			for (int k = 0; k < FramesUtil.framesCount; k++) {
 				ByteBuffer bb = ByteBuffer.allocateDirect(frameLength);
 				bb.order(ByteOrder.nativeOrder());
 				int n = ch.read(bb);

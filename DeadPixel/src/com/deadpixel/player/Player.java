@@ -2,9 +2,13 @@ package com.deadpixel.player;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.nio.ByteBuffer;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
@@ -15,38 +19,50 @@ import javax.swing.JPanel;
 import com.deadpixel.digitize.FrameReader;
 import com.deadpixel.digitize.FramesUtil;
 
-public class Player extends JPanel implements ActionListener
+public class Player extends JPanel implements ActionListener, MouseMotionListener
 {
     JLabel timeLabel;
     //JLabel imageLabel;
     ImageIcon icon;
     
-    int frameIndex;
+    int frameIndex, mouseX, mouseY;
+    ByteBuffer renderedFrameByteBuffer;
+    BufferedImage renderedFrame;
+    byte[] renderedFrameByteArray;
 
     public Player()
     {
         setLayout( new BorderLayout() );
 
-        timeLabel = new JLabel( new Date().toString() );
+        timeLabel = new JLabel();
         timeLabel.setPreferredSize(new Dimension(960, 540));
         //imageLabel = new JLabel( timeLabel.getText() );
 
         add(timeLabel, BorderLayout.NORTH);
         //add(imageLabel, BorderLayout.SOUTH);
-
+ 
+        addMouseMotionListener(this);
         frameIndex=0;
+        renderedFrameByteBuffer = ByteBuffer.allocateDirect(1566720);
+        renderedFrame = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
+        renderedFrameByteArray = ((DataBufferByte)renderedFrame.getRaster().getDataBuffer()).getData();
+        
         javax.swing.Timer timer = new javax.swing.Timer(33, this);
         timer.start();
     }
 
     public void actionPerformed(ActionEvent e)
     {
-    	if(frameIndex>350)
+    	if(frameIndex >= FramesUtil.framesCount)
     		frameIndex=0;
     	
-        timeLabel.setText( new Date().toString() );
-        //System.out.println(frameIndex);
-        ImageIcon icon = new ImageIcon(FramesUtil.frameMap.get(frameIndex).hqBufferedImage);
+        //timeLabel.setText( new Date().toString() );
+        //System.out.println(this.mouseX + ", " + this.mouseY);
+        
+        ((ByteBuffer) renderedFrameByteBuffer.rewind()).put(((DataBufferByte)FramesUtil.frameMap.get(frameIndex).lqBufferedImage.getRaster().getDataBuffer()).getData());
+        ((ByteBuffer) renderedFrameByteBuffer.rewind()).get(renderedFrameByteArray);
+        renderedFrame.setData(FramesUtil.getGazeArea(mouseX, mouseY, frameIndex));
+        ImageIcon icon = new ImageIcon(renderedFrame);
         icon.getImage().flush();
         timeLabel.setIcon(icon);
         frameIndex++;
@@ -85,4 +101,19 @@ public class Player extends JPanel implements ActionListener
             }
         });
     }
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		//System.out.println(e.getX() + ", " + e.getY());
+		mouseX = e.getX();
+		mouseY = e.getY();
+		// TODO Auto-generated method stub
+		
+	}
 }

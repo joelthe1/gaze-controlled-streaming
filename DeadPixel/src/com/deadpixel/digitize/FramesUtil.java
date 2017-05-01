@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class FramesUtil {
 	public static HashMap<Integer, Frame> frameMap;
 	private static FramesUtil instance = null;
-	public static int n1, n2, isGazedControlled;
+	public static int n1, n2, isGazedControlled, framesCount;
 	public static String inputFile;
 	private FramesUtil() {
 		frameMap = new HashMap<>();
