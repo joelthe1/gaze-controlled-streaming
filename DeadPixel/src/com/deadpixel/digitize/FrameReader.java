@@ -37,7 +37,7 @@ public class FrameReader {
 				//System.out.println(n + " and bb pos=" + bb.position() + " and ch pos=" + ch.position());
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
 
-				if((k!=0 && k%40 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%40 != 0) || k==24) {
+				if((k!=0 && k%48 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%40 != 0) || k==24) {
 					exec.invokeAll(tasks);
 					if(k==24) {
 						System.out.println("Starting player");
