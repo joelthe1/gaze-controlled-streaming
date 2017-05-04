@@ -147,7 +147,7 @@ def main():
     params['output'] = args.out
     params['njobs'] = args.njobs
     params['heuristics'] = args.heuristics
-    pixels = np.fromfile(params["input"], dtype=np.uint8)[:h * w * 3 * 100]
+    pixels = np.fromfile(params["input"], dtype=np.uint8)
     output_file = "{}/{}_encoder_output.npy".format(params["output"], params["input"].split('/')[-1].split('.')[0])
 
     values = Parallel(n_jobs=params["njobs"])(delayed(frame_worker)(pixels, index)
