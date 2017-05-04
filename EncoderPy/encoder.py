@@ -63,17 +63,31 @@ def frame_worker(pixels, ind):
         motion_vec = skvideo.motion.blockMotion(frames)[0]
         motion_vec_magnitudes = np.linalg.norm(motion_vec, axis=2)
         if params["heuristics"]:
-            band = 1
+            band = 4
             blocks_to_set_zero = []
             for i in range(1, motion_vec_magnitudes.shape[0] - 1):
                 for j in range(1, motion_vec_magnitudes.shape[1] - 1):
                     if (motion_vec_magnitudes[i, j] > 0.01):
                         mh, mw = motion_vec_magnitudes.shape
                         if ((i<mh//band or j<mw//band or i>(mh - mh//band) or j>(mw - mw//band)) and
-                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 3):
+                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 4):
                             blocks_to_set_zero.append((i, j))
-                        elif np.count_nonzero(motion_vec_magnitudes[i-1:i+1, j-1:j+1]) < 2:
+                        elif np.count_nonzero(motion_vec_magnitudes[i-1:i+1, j-1:j+1]) < 3:
                             blocks_to_set_zero.append((i, j))
+
+            for i, j in blocks_to_set_zero:
+                motion_vec_magnitudes[i][j] = 0.0
+
+            # Stage 2
+            for i in range(1, motion_vec_magnitudes.shape[0] - 1):
+                for j in range(1, motion_vec_magnitudes.shape[1] - 1):
+                    if (motion_vec_magnitudes[i, j] > 0.01):
+                        mh, mw = motion_vec_magnitudes.shape
+                        if ((i<mh//band or j<mw//band or i>(mh - mh//band) or j>(mw - mw//band)) and
+                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 4):
+                            blocks_to_set_zero.append((i, j))
+                        else:
+                            continue
 
             for i, j in blocks_to_set_zero:
                 motion_vec_magnitudes[i][j] = 0.0
@@ -132,7 +146,7 @@ def main():
     params['output'] = args.out
     params['njobs'] = args.njobs
     params['heuristics'] = args.heuristics
-    pixels = np.fromfile(params["input"], dtype=np.uint8)
+    pixels = np.fromfile(params["input"], dtype=np.uint8)[:h * w * 3 * 100]
     output_file = "{}/{}_encoder_output.npy".format(params["output"], params["input"].split('/')[-1].split('.')[0])
 
     values = Parallel(n_jobs=params["njobs"])(delayed(frame_worker)(pixels, index)
