@@ -91,7 +91,8 @@ def frame_worker(pixels, ind):
 
             for i, j in blocks_to_set_zero:
                 motion_vec_magnitudes[i][j] = 0.0
-            motion_vec_magnitudes = motion_vec_magnitudes.flatten()
+
+        motion_vec_magnitudes = motion_vec_magnitudes.flatten()
 
     r_coeffs = find_dct_coeff_single(img_array[0])
     g_coeffs = find_dct_coeff_single(img_array[1])
