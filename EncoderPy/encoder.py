@@ -61,7 +61,24 @@ def frame_worker(pixels, ind):
     if calculate_motion_vec:
         frames = np.array([reference_img, current_img])
         motion_vec = skvideo.motion.blockMotion(frames)[0]
-        motion_vec_magnitudes = np.linalg.norm(motion_vec, axis=2).flatten()
+        motion_vec_magnitudes = np.linalg.norm(motion_vec, axis=2)
+        if params["heuristics"]:
+            band = 4
+            blocks_to_set_zero = []
+            for i in range(1, motion_vec_magnitudes.shape[0] - 1):
+                for j in range(1, motion_vec_magnitudes.shape[1] - 1):
+                    if (motion_vec_magnitudes[i, j] > 0.01):
+                        mh, mw = motion_vec_magnitudes.shape
+                        if ((i<mh//band or j<mw//band or i>(mh - mh//band) or j>(mw - mw//band)) and
+                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 5):
+                            blocks_to_set_zero.append((i, j))
+                        elif np.count_nonzero(motion_vec_magnitudes[i-1:i+1, j-1:j+1]) < 2:
+                            blocks_to_set_zero.append((i, j))
+
+            print("no_blocks_rejected: ", len(blocks_to_set_zero))
+            for i, j in blocks_to_set_zero:
+                motion_vec_magnitudes[i][j] = 0.0
+            motion_vec_magnitudes = motion_vec_magnitudes.flatten()
 
     r_coeffs = find_dct_coeff_single(img_array[0])
     g_coeffs = find_dct_coeff_single(img_array[1])
@@ -88,7 +105,7 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         "-i", "--inp",
-        default='/Users/jmathai/multimedia_data/oneperson.rgb',
+        default='/Users/jmathai/multimedia_data/data/oneperson.rgb',
         help="Directory with rgb video."
     )
     parser.add_argument(
@@ -101,6 +118,11 @@ def main():
         default=multiprocessing.cpu_count(),
         help="no of threads to use"
     )
+    parser.add_argument(
+        "-hh", "--heuristics",
+        action='store_true',
+        help="use custom heuristics to improve motion vec"
+    )
     w = 960
     h = 540
     channels = 3
@@ -110,6 +132,7 @@ def main():
     params['input'] = args.inp
     params['output'] = args.out
     params['njobs'] = args.njobs
+    params['heuristics'] = args.heuristics
     pixels = np.fromfile(params["input"], dtype=np.uint8)
     output_file = "{}/{}_encoder_output.npy".format(params["output"], params["input"].split('/')[-1].split('.')[0])
 
