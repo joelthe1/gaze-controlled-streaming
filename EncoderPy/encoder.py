@@ -2,6 +2,7 @@ import argparse
 import itertools
 import multiprocessing
 import os
+from tqdm import tqdm
 
 import skvideo.io
 import skvideo.motion
@@ -30,7 +31,6 @@ def frame_worker(pixels, ind):
     :param ind: starting location of the image in the byte array
     :return: rows of csv
     """
-    print("started worker for frame:{}/{}".format(ind // (960 * 540 * 3) + 1, len(pixels) // (960 * 540 * 3)))
     h = 540
     w = 960
     channels = 3
@@ -63,19 +63,18 @@ def frame_worker(pixels, ind):
         motion_vec = skvideo.motion.blockMotion(frames)[0]
         motion_vec_magnitudes = np.linalg.norm(motion_vec, axis=2)
         if params["heuristics"]:
-            band = 4
+            band = 1
             blocks_to_set_zero = []
             for i in range(1, motion_vec_magnitudes.shape[0] - 1):
                 for j in range(1, motion_vec_magnitudes.shape[1] - 1):
                     if (motion_vec_magnitudes[i, j] > 0.01):
                         mh, mw = motion_vec_magnitudes.shape
                         if ((i<mh//band or j<mw//band or i>(mh - mh//band) or j>(mw - mw//band)) and
-                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 5):
+                            np.count_nonzero(motion_vec_magnitudes[i - 1:i + 1, j - 1:j + 1]) < 3):
                             blocks_to_set_zero.append((i, j))
                         elif np.count_nonzero(motion_vec_magnitudes[i-1:i+1, j-1:j+1]) < 2:
                             blocks_to_set_zero.append((i, j))
 
-            print("no_blocks_rejected: ", len(blocks_to_set_zero))
             for i, j in blocks_to_set_zero:
                 motion_vec_magnitudes[i][j] = 0.0
             motion_vec_magnitudes = motion_vec_magnitudes.flatten()
@@ -137,7 +136,7 @@ def main():
     output_file = "{}/{}_encoder_output.npy".format(params["output"], params["input"].split('/')[-1].split('.')[0])
 
     values = Parallel(n_jobs=params["njobs"])(delayed(frame_worker)(pixels, index)
-                                              for index in range(0, len(pixels), (h * w * channels)))
+                                              for index in tqdm(range(0, len(pixels), (h * w * channels))))
 
     print("writing to ", output_file)
     np.array(values).flatten().tofile(output_file)
