@@ -30,6 +30,7 @@ public class FrameReader {
 			ExecutorService exec = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 			ArrayList<Callable<Boolean>> tasks = new ArrayList<Callable<Boolean>>();
 			FramesUtil.framesCount = (int)(fileLength / frameLength);
+			int threadCount = 48;
 			for (int k = 0; k < FramesUtil.framesCount; k++) {
 				ByteBuffer bb = ByteBuffer.allocateDirect(frameLength);
 				bb.order(ByteOrder.nativeOrder());
@@ -37,9 +38,9 @@ public class FrameReader {
 				//System.out.println(n + " and bb pos=" + bb.position() + " and ch pos=" + ch.position());
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
 
-				if((k!=0 && k%48 == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%40 != 0) || k==24) {
-					exec.invokeAll(tasks);
-					if(k==24) {
+				if((k!=0 && k%threadCount == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%threadCount != 0)) {
+					
+					if(k==threadCount) {
 						System.out.println("Starting player");
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
@@ -47,6 +48,7 @@ public class FrameReader {
 							}
 						});
 					}
+					exec.invokeAll(tasks);
 					System.out.println("Time taken for " + (k+1) +" frames=" + (System.currentTimeMillis() - startTime) + 
 							" and tasks size=" + tasks.size());
 					tasks.clear();
