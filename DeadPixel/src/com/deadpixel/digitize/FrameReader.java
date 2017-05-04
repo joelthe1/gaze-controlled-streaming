@@ -39,7 +39,7 @@ public class FrameReader {
 				tasks.add(new Frame(((ByteBuffer) bb.rewind()).asFloatBuffer()));
 
 				if((k!=0 && k%threadCount == 0) || (k == (fileLength / frameLength)-1 && (fileLength / frameLength)%threadCount != 0)) {
-					
+					exec.invokeAll(tasks);
 					if(k==threadCount) {
 						System.out.println("Starting player");
 						EventQueue.invokeLater(new Runnable() {
@@ -48,7 +48,6 @@ public class FrameReader {
 							}
 						});
 					}
-					exec.invokeAll(tasks);
 					System.out.println("Time taken for " + (k+1) +" frames=" + (System.currentTimeMillis() - startTime) + 
 							" and tasks size=" + tasks.size());
 					tasks.clear();

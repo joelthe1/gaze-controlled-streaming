@@ -43,15 +43,15 @@ public class Player extends JPanel implements ActionListener, MouseMotionListene
  
         addMouseMotionListener(this);
         
-        frameIndex=0;
+        frameIndex=50;
         renderedFrameByteBuffer = ByteBuffer.allocateDirect(1566720);
         renderedFrame = new BufferedImage(960,544,BufferedImage.TYPE_3BYTE_BGR);
         renderedFrameByteArray = ((DataBufferByte)renderedFrame.getRaster().getDataBuffer()).getData();
         
-        javax.swing.Timer timer = new javax.swing.Timer(41, this);
+        javax.swing.Timer timer = new javax.swing.Timer(33, this);
         timer.start();
         
-        isPaused = false;
+        isPaused = true;
         addMouseListener(new MouseAdapter() { 
             public void mousePressed(MouseEvent me) { 
             	isPaused = isPaused? false: true;
